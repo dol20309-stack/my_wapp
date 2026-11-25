@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>일본여행 플래너</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#1f2937;--sub:#6b7280;--line:#e5e7eb;--grid:#d9dde3;--acc:#d64545;--acc-soft:#fdecec;--blue:#2563eb;--day:#eef2ff;--hover:#f8fafc}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 "Pretendard","Malgun Gothic",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+.top{background:#fff;border-bottom:1px solid var(--line);padding:12px 20px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.top .logo{font-size:20px}
+.top input#title{font-size:18px;font-weight:700;border:0;outline:0;background:transparent;min-width:120px;width:200px;padding:4px 6px;border-radius:6px}
+.top input#title:hover,.top input#title:focus{background:var(--hover);box-shadow:0 0 0 1px var(--grid)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.chip{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:20px;padding:4px 12px;font-size:13px;color:var(--sub)}
+.chip input{border:0;background:#fff;border-radius:6px;padding:3px 6px;font-size:13px;width:70px;text-align:right;color:var(--ink);box-shadow:0 0 0 1px var(--grid)}
+.chip input[type=date]{width:128px;text-align:left}
+.chip input.d{width:46px}
+nav{display:flex;gap:6px;padding:10px 20px 0;background:#fff;border-bottom:1px solid var(--line)}
+nav button{border:0;background:none;padding:9px 16px;font-size:14px;color:var(--sub);cursor:pointer;border-bottom:3px solid transparent;font-weight:600}
+nav button.on{color:var(--acc);border-color:var(--acc)}
+main{max-width:1100px;margin:0 auto;padding:18px 20px 60px}
+.hide{display:none}
+.sheet{background:var(--card);border:1px solid var(--grid);border-radius:10px;overflow:auto;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:18px}
+table.grid{border-collapse:collapse;width:100%;min-width:760px}
+.grid th{position:sticky;top:0;background:#f9fafb;font-size:12px;color:var(--sub);text-align:left;padding:8px 10px;border-bottom:1px solid var(--grid);border-right:1px solid var(--line);white-space:nowrap}
+.grid td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:0;height:36px}
+.grid th:last-child,.grid td:last-child{border-right:0}
+.n{text-align:right}
+.grid td input,.grid td select{width:100%;height:36px;border:0;background:transparent;padding:0 10px;font:inherit;color:inherit;outline:0}
+.grid td input[type=number]{text-align:right}
+.grid td input:focus,.grid td select:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--blue)}
+.grid tr:hover td{background:var(--hover)}
+.grid td.calc{padding:0 10px;color:var(--sub);white-space:nowrap}
+.grid td.act{white-space:nowrap;padding:0 4px;text-align:center}
+tr.day td{background:var(--day);height:40px;padding:0 10px!important;border-right:0;position:relative}
+tr.day:hover td{background:var(--day)}
+.dayrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dayrow b{font-size:14px}
+.dayrow .dsum{color:var(--blue);font-weight:600}
+.sp{flex:1}
+.grid tr.seg td{height:30px;padding:0 10px!important;background:#fafafa;font-size:12px;color:var(--sub)}
+.grid tr.seg td span{margin-right:10px}
+.grid tr.seg .btn{padding:1px 8px;margin-right:4px}
+.grid tr.seg:hover td{background:#fafafa}
+.empty td{color:#9ca3af;padding:0 10px!important;font-size:13px}
+.btn{border:1px solid var(--grid);background:#fff;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--ink);text-decoration:none;display:inline-block;line-height:1.5}
+.btn:hover{background:var(--hover)}
+.btn.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn.p:hover{background:#c13a3a}
+.ib{border:0;background:none;cursor:pointer;padding:4px 5px;border-radius:4px;color:var(--sub);font-size:13px;text-decoration:none}
+.ib:hover{background:var(--line);color:var(--ink)}
+.ib.off{opacity:.3;pointer-events:none}
+tfoot td{background:#f9fafb;font-weight:700;padding:0 10px!important;height:40px}
+h2.t{font-size:15px;margin:22px 2px 8px;display:flex;align-items:center;gap:10px}
+h2.t small{font-weight:400;color:var(--sub)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--grid);border-radius:10px;padding:14px 16px}
+.stat .l{color:var(--sub);font-size:12px}
+.stat .v{font-size:24px;font-weight:800;margin:2px 0}
+.stat.main{background:var(--acc-soft);border-color:#f5c2c2}
+.stat.main .v{color:var(--acc)}
+.bars{background:#fff;border:1px solid var(--grid);border-radius:10px;padding:14px 16px;margin-bottom:18px}
+.bar{display:grid;grid-template-columns:130px 1fr 150px;gap:10px;align-items:center;padding:4px 0}
+.bar .track{background:var(--bg);border-radius:6px;height:16px;overflow:hidden}
+.bar .fill{background:var(--blue);height:100%;border-radius:6px;min-width:2px}
+.bar .r{text-align:right;font-size:13px}
+.tools{background:#fff;border:1px solid var(--grid);border-radius:10px;padding:14px 16px}
+.tools .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.tools .hint{color:var(--sub);font-size:13px;margin:0 0 10px}
+.tools textarea{width:100%;height:150px;font:12px/1.4 Consolas,monospace;border:1px solid var(--grid);border-radius:8px;padding:8px}
+.shop{max-width:540px;margin:0 auto}
+.shop h1{font-size:22px;margin:6px 0 2px}
+.shop .subt{color:var(--sub);font-size:13px;margin-bottom:14px}
+.shop .addbox{background:#fff;border-radius:14px;padding:10px;display:flex;gap:8px;box-shadow:0 0 0 1px var(--line);margin-bottom:12px}
+.shop .addbox input{flex:1;min-width:0;border:0;background:#f3f4f6;border-radius:10px;padding:12px 14px;font-size:14px;outline:0}
+.shop .addbox input.pr{flex:0 0 96px;text-align:right}
+.shop .addbox button{background:#2f80ed;color:#fff;border:0;border-radius:10px;padding:0 18px;font-weight:700;cursor:pointer}
+.shop .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.shop .tabs button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px;color:var(--sub);cursor:pointer;font-size:14px}
+.shop .tabs button.on{background:#2f80ed;color:#fff;border-color:#2f80ed;font-weight:700}
+.shop .warn{color:#ef4444;font-size:12px;margin:0 0 8px}
+.shop .list{background:#fff;border-radius:14px;box-shadow:0 0 0 1px var(--line);overflow:hidden}
+.shop .item{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--line)}
+.shop .item:last-child{border-bottom:0}
+.shop .item input[type=checkbox]{width:20px;height:20px;accent-color:#2f80ed;cursor:pointer;flex:none}
+.shop .item .nm{flex:1;font-weight:500;word-break:break-all}
+.shop .item.done .nm{text-decoration:line-through;color:#9ca3af}
+.shop .item .pc{color:var(--sub);font-size:12px;text-align:right}
+.shop .item .x{border:0;background:none;color:#9ca3af;font-size:18px;cursor:pointer}
+.shop .empty{padding:28px;text-align:center;color:#9ca3af}
+.sv{max-width:780px;margin:0 auto}
+.sv h1{font-size:20px;margin:6px 0 2px}
+.sv .subt{color:var(--sub);font-size:13px;margin-bottom:14px}
+.sv .box{background:#fff;border:1px solid var(--grid);border-radius:12px;padding:14px;margin-bottom:14px}
+.sv .box p{margin:0 0 8px;color:var(--sub);font-size:13px}
+.sv textarea{width:100%;height:84px;border:1px solid var(--grid);border-radius:8px;padding:8px;font:13px/1.4 inherit}
+.sv .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.sv .list{background:#fff;border:1px solid var(--grid);border-radius:12px;overflow:hidden}
+.sv .item{display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sv .item:last-child{border-bottom:0}
+.sv .item .nm{flex:1;min-width:150px;font-weight:600}
+.sv .item .nt{display:block;font-weight:400;color:var(--sub);font-size:12px}
+.sv select{padding:6px;border:1px solid var(--grid);border-radius:6px;background:#fff}
+.sv .done{background:#dcfce7;color:#166534;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:600}
+.sv .empty{padding:26px;text-align:center;color:#9ca3af}
+.sv details{margin-top:8px;color:var(--sub);font-size:13px}
+@media(max-width:640px){main{padding:12px 8px 60px}.chips{margin-left:0}.bar{grid-template-columns:90px 1fr 110px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="logo">🇯🇵</span>
+  <input id="title" aria-label="여행명">
+  <div class="chips">
+    <label class="chip">출발일 <input type="date" id="start"></label>
+    <label class="chip">일수 <input type="number" id="days" min="1" max="30" class="d"></label>
+    <label class="chip">100엔 = <input type="number" id="rate" step="0.1"> 원</label>
+  </div>
+</div>
+<nav>
+  <button data-t="plan" class="on">📅 일정표</button>
+  <button data-t="budget">💴 예산표</button>
+  <button data-t="saved">⭐ 저장 장소</button>
+  <button data-t="shop">🛍️ 쇼핑리스트</button>
+  <button data-t="sum">📊 요약·내보내기</button>
+</nav>
+<main>
+  <section id="plan"></section>
+  <section id="budget" class="hide"></section>
+  <section id="saved" class="hide"></section>
+  <section id="shop" class="hide"></section>
+  <section id="sum" class="hide"></section>
+</main>
+<script>
+const KEY='jp-planner-v1';
+const CATS=['관광','식당','카페','쇼핑','이동','숙소','기타'];
+const BCATS=['항공','숙소','교통패스','식비','쇼핑','입장료·체험','통신·보험','예비비'];
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.plan){S={title:'일본여행',start:'',days:3,rate:920,plan:{},budget:BCATS.map(n=>({name:n,jpy:0,note:''}))}}
+const $=s=>document.querySelector(s);
+S.shop=S.shop||[];S.saved=S.saved||[];
+let storageOK=true;
+try{localStorage.setItem('_t','1');localStorage.removeItem('_t')}catch(e){storageOK=false}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){storageOK=false}};
+const yen=n=>'¥'+Math.round(n).toLocaleString();
+const won=j=>Math.round(j*S.rate/100).toLocaleString()+'원';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mapQ=p=>p.url||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name));
+function dayLabel(i){
+  let t='Day '+(i+1);
+  if(S.start){const d=new Date(S.start);d.setDate(d.getDate()+i);t+=' · '+(d.getMonth()+1)+'/'+d.getDate()+'('+'일월화수목금토'[d.getDay()]+')'}
+  return t;
+}
+const dayCost=i=>(S.plan[i]||[]).reduce((a,p)=>a+(+p.cost||0),0);
+const fixedTotal=()=>S.budget.reduce((a,b)=>a+(+b.jpy||0),0);
+const spotTotal=()=>Array.from({length:S.days},(_,i)=>dayCost(i)).reduce((a,b)=>a+b,0);
+const setT=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t};
+
+function head(){$('#title').value=S.title;$('#start').value=S.start;$('#days').value=S.days;$('#rate').value=S.rate}
+['title','start','days','rate'].forEach(id=>$('#'+id).addEventListener('change',e=>{
+  let v=e.target.value;
+  if(id==='days'){v=Math.min(30,Math.max(1,+v||1));e.target.value=v}
+  if(id==='rate')v=+v||0;
+  S[id]=v;save();render();
+}));
+
+/* ---------- 일정표 ---------- */
+function renderPlan(){
+  let h=`<div class="sheet"><table class="grid"><thead><tr>
+  <th style="width:92px">시간</th><th>장소</th><th style="width:92px">분류</th><th class="n" style="width:104px">금액(¥)</th><th class="n" style="width:112px">원화</th><th>메모</th><th style="width:78px">지도</th><th style="width:86px"></th></tr></thead>`;
+  for(let i=0;i<S.days;i++){
+    const list=(S.plan[i]=S.plan[i]||[]);
+    const names=list.filter(p=>p.name).map(p=>encodeURIComponent(p.name));
+    const route=names.length>1?'https://www.google.com/maps/dir/'+names.join('/'):'';
+    h+=`<tbody><tr class="day"><td colspan="8"><div class="dayrow"><b>${dayLabel(i)}</b>
+      <span class="dsum" id="dc${i}"></span><span class="sp"></span>
+      ${route?`<a class="btn" target="_blank" rel="noopener" href="${route}">🗺️ 동선 보기</a>`:''}
+      <button class="btn" onclick="sortDay(${i})">시간순 정렬</button>
+      <button class="btn p" onclick="padd(${i})">+ 장소</button></div></td></tr>`;
+    if(!list.length)h+='<tr class="empty"><td colspan="8">장소가 없어요. 오른쪽 위 “+ 장소”를 눌러 한 줄 추가하세요.</td></tr>';
+    list.forEach((p,k)=>{
+      h+=`<tr>
+      <td><input type="time" value="${esc(p.time)}" onchange="pset(${i},${k},'time',this.value)"></td>
+      <td><input id="n${i}_${k}" value="${esc(p.name)}" placeholder="예) 센소지" onchange="pset(${i},${k},'name',this.value.trim(),true)"></td>
+      <td><select onchange="pset(${i},${k},'cat',this.value)">${CATS.map(c=>`<option${c===p.cat?' selected':''}>${c}</option>`).join('')}</select></td>
+      <td><input type="number" value="${p.cost||''}" placeholder="0" onchange="pset(${i},${k},'cost',+this.value)"></td>
+      <td class="calc n" id="w${i}_${k}">${won(p.cost||0)}</td>
+      <td><input value="${esc(p.memo)}" onchange="pset(${i},${k},'memo',this.value)"></td>
+      <td class="act"><a class="ib${p.name||p.url?'':' off'}" target="_blank" rel="noopener" href="${esc(mapQ(p))}" title="구글맵에서 열기">📍</a><button class="ib" title="구글맵 링크 직접 지정" onclick="setUrl(${i},${k})">${p.url?'🔗':'✎'}</button></td>
+      <td class="act"><button class="ib" onclick="mv(${i},${k},-1)">↑</button><button class="ib" onclick="mv(${i},${k},1)">↓</button><button class="ib" onclick="del(${i},${k})">✕</button></td></tr>`+seg(list[k],list[k+1]);
+    });
+    h+='</tbody>';
+  }
+  h+=`<tfoot><tr><td colspan="3">일정 지출 합계</td><td class="n" id="pt1"></td><td class="n" id="pt2"></td><td colspan="3"></td></tr></tfoot></table></div>`;
+  $('#plan').innerHTML=h;
+  calc();
+}
+function seg(a,b){
+  if(!a||!b||!a.name||!b.name)return '';
+  const u=m=>'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(a.name)+'&destination='+encodeURIComponent(b.name)+'&travelmode='+m;
+  return `<tr class="seg"><td colspan="8"><span>↓ ${esc(a.name)} → ${esc(b.name)}</span>
+    <a class="btn" target="_blank" rel="noopener" href="${u('transit')}">🚇 대중교통</a>
+    <a class="btn" target="_blank" rel="noopener" href="${u('walking')}">🚶 도보</a></td></tr>`;
+}
+function padd(i,focus=true){
+  S.plan[i].push({time:'',name:'',cost:0,cat:'관광',memo:'',url:''});
+  save();renderPlan();
+  const k=S.plan[i].length-1;const e=document.getElementById('n'+i+'_'+k);if(e)e.focus();
+}
+function pset(i,k,f,v,rerender){S.plan[i][k][f]=v;save();rerender?renderPlan():calc()}
+function sortDay(i){S.plan[i].sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));save();renderPlan()}
+function mv(i,k,d){const l=S.plan[i],j=k+d;if(j<0||j>=l.length)return;[l[k],l[j]]=[l[j],l[k]];save();renderPlan()}
+function del(i,k){S.plan[i].splice(k,1);save();renderPlan()}
+function setUrl(i,k){
+  const u=prompt('구글맵 링크를 붙여넣으세요 (비우면 장소명으로 검색)',S.plan[i][k].url||'');
+  if(u===null)return;S.plan[i][k].url=u.trim();save();renderPlan();
+}
+
+/* ---------- 예산표 ---------- */
+function renderBudget(){
+  let h=`<h2 class="t">고정 예산 <small>항공·숙소 등 미리 정하는 비용 · 100엔 = ${S.rate}원</small></h2>
+  <div class="sheet"><table class="grid" style="min-width:520px"><thead><tr><th>항목</th><th class="n" style="width:120px">엔(¥)</th><th class="n" style="width:130px">원화</th><th>메모</th><th style="width:46px"></th></tr></thead><tbody>`;
+  S.budget.forEach((b,k)=>{
+    h+=`<tr><td><input value="${esc(b.name)}" onchange="bset(${k},'name',this.value)"></td>
+    <td><input type="number" value="${b.jpy||''}" placeholder="0" onchange="bset(${k},'jpy',+this.value)"></td>
+    <td class="calc n" id="bw${k}">${won(b.jpy||0)}</td>
+    <td><input value="${esc(b.note)}" onchange="bset(${k},'note',this.value)"></td>
+    <td class="act"><button class="ib" onclick="bdel(${k})">✕</button></td></tr>`;
+  });
+  h+=`</tbody><tfoot><tr><td>고정 예산 합계</td><td class="n" id="bt1"></td><td class="n" id="bt2"></td><td colspan="2"></td></tr></tfoot></table></div>
+  <button class="btn p" onclick="badd()">+ 항목 추가</button>
+  <h2 class="t">날짜별 일정 지출 <small>일정표에 입력한 금액이 자동으로 합산돼요</small></h2>
+  <div class="sheet"><table class="grid" style="min-width:420px"><thead><tr><th>날짜</th><th class="n" style="width:120px">엔(¥)</th><th class="n" style="width:130px">원화</th></tr></thead><tbody>`;
+  for(let i=0;i<S.days;i++)h+=`<tr><td class="calc" style="color:var(--ink)">${dayLabel(i)}</td><td class="calc n" id="bd1_${i}" style="color:var(--ink)"></td><td class="calc n" id="bd2_${i}"></td></tr>`;
+  h+=`</tbody><tfoot><tr><td>일정 지출 합계</td><td class="n" id="bs1"></td><td class="n" id="bs2"></td></tr></tfoot></table></div>`;
+  $('#budget').innerHTML=h;
+  calc();
+}
+function bset(k,f,v){S.budget[k][f]=v;save();calc()}
+function bdel(k){S.budget.splice(k,1);save();renderBudget()}
+function badd(){S.budget.push({name:'새 항목',jpy:0,note:''});save();renderBudget()}
+
+/* ---------- 합계 갱신 (입력 칸 포커스 유지) ---------- */
+function calc(){
+  for(let i=0;i<S.days;i++){
+    const c=dayCost(i);
+    setT('dc'+i,'소계 '+yen(c)+' ('+won(c)+')');
+    setT('bd1_'+i,yen(c));setT('bd2_'+i,won(c));
+    (S.plan[i]||[]).forEach((p,k)=>setT('w'+i+'_'+k,won(p.cost||0)));
+  }
+  S.budget.forEach((b,k)=>setT('bw'+k,won(b.jpy||0)));
+  setT('pt1',yen(spotTotal()));setT('pt2',won(spotTotal()));
+  setT('bs1',yen(spotTotal()));setT('bs2',won(spotTotal()));
+  setT('bt1',yen(fixedTotal()));setT('bt2',won(fixedTotal()));
+}
+
+/* ---------- 요약·내보내기 ---------- */
+function md(){
+  let o=`# ${S.title}\n\n환율: 100엔 = ${S.rate}원\n\n## 예산 요약\n\n| 항목 | 엔(¥) | 원화 | 메모 |\n|---|---:|---:|---|\n`;
+  S.budget.forEach(b=>o+=`| ${b.name} | ${yen(b.jpy||0)} | ${won(b.jpy||0)} | ${b.note||''} |\n`);
+  o+=`| **고정 합계** | **${yen(fixedTotal())}** | **${won(fixedTotal())}** | |\n\n## 날짜별 일정 지출\n\n| 날짜 | 엔(¥) | 원화 |\n|---|---:|---:|\n`;
+  for(let i=0;i<S.days;i++)o+=`| ${dayLabel(i)} | ${yen(dayCost(i))} | ${won(dayCost(i))} |\n`;
+  o+=`| **합계** | **${yen(spotTotal())}** | **${won(spotTotal())}** |\n\n**총 예상 비용: ${yen(fixedTotal()+spotTotal())} (${won(fixedTotal()+spotTotal())})**\n\n## 일정\n`;
+  for(let i=0;i<S.days;i++){
+    o+=`\n### ${dayLabel(i)}\n\n`;
+    (S.plan[i]||[]).filter(p=>p.name).forEach(p=>o+=`- ${p.time||'--:--'} [${p.name}](${mapQ(p)}) · ${p.cat}${p.cost?' · '+yen(p.cost):''}${p.memo?' · '+p.memo:''}\n`);
+  }
+  return o;
+}
+function renderSum(){
+  const t=fixedTotal()+spotTotal();
+  const max=Math.max(1,...Array.from({length:S.days},(_,i)=>dayCost(i)));
+  let bars='';
+  for(let i=0;i<S.days;i++)bars+=`<div class="bar"><span>${dayLabel(i)}</span><div class="track"><div class="fill" style="width:${dayCost(i)/max*100}%"></div></div><span class="r">${yen(dayCost(i))} · ${won(dayCost(i))}</span></div>`;
+  $('#sum').innerHTML=`<div class="cards">
+  <div class="stat main"><div class="l">총 예상 비용</div><div class="v">${yen(t)}</div><div>${won(t)}</div></div>
+  <div class="stat"><div class="l">고정 예산</div><div class="v">${yen(fixedTotal())}</div><div>${won(fixedTotal())}</div></div>
+  <div class="stat"><div class="l">일정 지출</div><div class="v">${yen(spotTotal())}</div><div>${won(spotTotal())}</div></div>
+  <div class="stat"><div class="l">쇼핑리스트 (안 산 것)</div><div class="v">${yen(shopRest())}</div><div>${won(shopRest())}</div></div></div>
+  <div class="bars"><b>날짜별 지출</b><div style="margin-top:8px">${bars}</div></div>
+  <div class="tools"><b>내보내기</b>
+  <p class="hint">엑셀 저장은 CSV 파일로 받아서 엑셀로 열면 돼요. 노션은 복사한 뒤 공유 페이지에 붙여넣으세요.</p>
+  <div class="row"><button class="btn p" onclick="csvPlan()">⬇ 일정표 엑셀(CSV)</button><button class="btn p" onclick="csvBudget()">⬇ 예산표 엑셀(CSV)</button>
+  <button class="btn" onclick="copyMd()">📋 노션용 복사</button><button class="btn p" onclick="notionAll()">📘 노션 DB 파일 4종</button><button class="btn" onclick="dl()">백업 저장</button>
+  <label class="btn" style="cursor:pointer">백업 불러오기<input type="file" accept=".json" class="hide" onchange="imp(this)"></label></div>
+  <textarea id="mdout" readonly>${esc(md())}</textarea></div>`;
+}
+async function copyMd(){
+  const ta=$('#mdout');
+  try{await navigator.clipboard.writeText(ta.value)}catch(e){ta.select();document.execCommand('copy')}
+  alert('복사했어요. 노션에 붙여넣기(Ctrl+V) 하세요.');
+}
+function save_(name,text,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();
+}
+const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+function csvPlan(){
+  let r=[['일차','날짜','시간','장소','분류','금액(엔)','금액(원)','메모','지도링크'].map(q).join(',')];
+  for(let i=0;i<S.days;i++)(S.plan[i]||[]).forEach(p=>r.push([i+1,dayLabel(i).split(' · ')[1]||'',p.time,p.name,p.cat,p.cost||0,Math.round((p.cost||0)*S.rate/100),p.memo,p.name||p.url?mapQ(p):''].map(q).join(',')));
+  save_('일정표.csv','﻿'+r.join('\r\n'),'text/csv');
+}
+function csvBudget(){
+  let r=[['항목','금액(엔)','금액(원)','메모'].map(q).join(',')];
+  S.budget.forEach(b=>r.push([b.name,b.jpy||0,Math.round((b.jpy||0)*S.rate/100),b.note].map(q).join(',')));
+  r.push(['고정 합계',fixedTotal(),Math.round(fixedTotal()*S.rate/100),''].map(q).join(','));
+  r.push(['일정 지출 합계',spotTotal(),Math.round(spotTotal()*S.rate/100),''].map(q).join(','));
+  r.push(['총 예상 비용',fixedTotal()+spotTotal(),Math.round((fixedTotal()+spotTotal())*S.rate/100),''].map(q).join(','));
+  save_('예산표.csv','﻿'+r.join('\r\n'),'text/csv');
+}
+function notionAll(){
+  const j=n=>Math.round((n||0)*S.rate/100);
+  const csv=r=>'﻿'+r.map(x=>x.map(q).join(',')).join('\r\n');
+  const plan=[['장소','일차','날짜','시간','분류','금액(엔)','금액(원)','메모','지도링크']];
+  for(let i=0;i<S.days;i++)(S.plan[i]||[]).forEach(p=>plan.push([p.name,'Day '+(i+1),dayLabel(i).split(' · ')[1]||'',p.time,p.cat,p.cost||0,j(p.cost),p.memo,p.name||p.url?mapQ(p):'']));
+  const bud=[['항목','금액(엔)','금액(원)','메모']].concat(S.budget.map(b=>[b.name,b.jpy||0,j(b.jpy),b.note]));
+  const shop=[['상품','금액(엔)','금액(원)','구매여부']].concat(S.shop.map(x=>[x.name,x.jpy||0,j(x.jpy),x.done?'Yes':'No']));
+  const sv=[['장소','메모','지도링크','배정일차']].concat(S.saved.map(x=>[x.name,x.note,x.name||x.url?mapQ(x):'',x.day!=null?'Day '+(x.day+1):'']));
+  [['노션_일정.csv',plan],['노션_예산.csv',bud],['노션_쇼핑.csv',shop],['노션_저장장소.csv',sv]]
+    .forEach(([n,r],k)=>setTimeout(()=>save_(n,csv(r),'text/csv'),k*400));
+  alert('파일 4개를 내려받아요. 브라우저가 여러 파일 다운로드를 물으면 허용해 주세요.\n노션에서 사이드바 > 가져오기 > CSV로 하나씩 불러오면 데이터베이스가 만들어져요.');
+}
+function dl(){save_('japan-trip.json',JSON.stringify(S,null,1),'application/json')}
+function imp(inp){
+  const f=inp.files[0];if(!f)return;
+  f.text().then(t=>{try{S=JSON.parse(t);S.shop=S.shop||[];S.saved=S.saved||[];save();head();render()}catch(e){alert('파일을 읽지 못했어요.')}});
+}
+
+/* ---------- 쇼핑 버킷리스트 ---------- */
+let shopTab='todo';
+const shopRest=()=>S.shop.filter(x=>!x.done).reduce((a,x)=>a+(+x.jpy||0),0);
+function renderShop(){
+  const L=S.shop,d=L.filter(x=>x.done).length,rest=shopRest();
+  const view=L.map((x,i)=>({x,i})).filter(({x})=>shopTab==='all'||(shopTab==='done')===!!x.done);
+  const empty={todo:'안 산 물건이 없어요. 사고 싶은 걸 추가해 보세요.',done:'아직 산 물건이 없어요.',all:'목록이 비어 있어요.'}[shopTab];
+  $('#shop').innerHTML=`<div class="shop"><h1>🛍️ 쇼핑 버킷리스트</h1>
+  <div class="subt">${d} / ${L.length} 구매 · 남은 것 ${L.length-d}개${rest?' · 남은 예상 '+yen(rest)+' ('+won(rest)+')':''}</div>
+  <form class="addbox" onsubmit="return shopAdd(event)"><input name="name" placeholder="사고 싶은 것을 입력하세요" required><input class="pr" name="jpy" type="number" min="0" placeholder="엔(선택)"><button>추가</button></form>
+  <div class="tabs">${[['todo','안 산 것'],['done','산 것'],['all','전체']].map(([k,t])=>`<button class="${k===shopTab?'on':''}" onclick="shopTab='${k}';renderShop()">${t}</button>`).join('')}</div>
+  ${storageOK?'':'<p class="warn">저장 공간을 쓸 수 없어 이 창을 닫으면 내용이 사라질 수 있어요.</p>'}
+  <div class="list">${view.length?view.map(({x,i})=>`<div class="item${x.done?' done':''}"><input type="checkbox" ${x.done?'checked':''} onchange="shopSet(${i})"><span class="nm">${esc(x.name)}</span>${x.jpy?`<span class="pc">${yen(x.jpy)}<br>${won(x.jpy)}</span>`:''}<button class="x" title="삭제" onclick="shopDel(${i})">✕</button></div>`).join(''):`<div class="empty">${empty}</div>`}</div></div>`;
+}
+function shopAdd(e){
+  e.preventDefault();
+  const f=new FormData(e.target);
+  S.shop.push({name:f.get('name').trim(),jpy:+f.get('jpy')||0,done:false});
+  save();renderShop();const i=document.querySelector('#shop input[name=name]');if(i)i.focus();return false;
+}
+function shopSet(i){S.shop[i].done=!S.shop[i].done;save();renderShop()}
+function shopDel(i){S.shop.splice(i,1);save();renderShop()}
+
+/* ---------- 구글맵 저장 장소 보관함 ---------- */
+function parseCSV(t){
+  const rows=[];let r=[],c='',q=false;
+  for(let i=0;i<t.length;i++){
+    const ch=t[i];
+    if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
+    else if(ch=='"')q=true;
+    else if(ch==','){r.push(c);c=''}
+    else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;r.push(c);c='';if(r.some(x=>x))rows.push(r);r=[]}
+    else c+=ch;
+  }
+  r.push(c);if(r.some(x=>x))rows.push(r);
+  return rows;
+}
+function nameFromUrl(u){
+  const m=u.match(/\/place\/([^\/@?]+)/);
+  if(m){try{return decodeURIComponent(m[1].replace(/\+/g,' '))}catch(e){}}
+  return '';
+}
+function savedPush(list){
+  let n=0;
+  list.forEach(p=>{
+    if(!p.name&&!p.url)return;
+    if(S.saved.some(x=>x.name===p.name&&x.url===p.url))return;
+    S.saved.push({name:p.name||nameFromUrl(p.url)||'이름 없는 장소',url:p.url||'',note:p.note||'',day:null});n++;
+  });
+  save();renderSaved();return n;
+}
+function savedCsv(inp){
+  const f=inp.files[0];if(!f)return;
+  f.text().then(t=>{
+    const rows=parseCSV(t.replace(/^﻿/,''));
+    if(rows.length<2){alert('내용이 없는 파일이에요.');return}
+    const h=rows[0].map(x=>x.trim().toLowerCase());
+    const find=re=>h.findIndex(x=>re.test(x));
+    let ti=find(/title|제목|이름|name/),ui=find(/url|링크|주소/),ni=find(/note|메모/),ci=find(/comment|댓글|코멘트/);
+    if(ti<0)ti=0;if(ui<0)ui=2;
+    const list=rows.slice(1).map(r=>({name:(r[ti]||'').trim(),url:(r[ui]||'').trim(),note:[r[ni],r[ci]].filter(Boolean).join(' / ').trim()}));
+    alert(list.length+'개 중 '+savedPush(list)+'개를 새로 가져왔어요.');
+    inp.value='';
+  });
+}
+function savedPaste(){
+  const ta=$('#svpaste');
+  const list=ta.value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{
+    const m=l.match(/https?:\/\/\S+/);
+    const url=m?m[0]:'';
+    return{name:l.replace(url,'').replace(/[\s,\-–|]+$/,'').trim(),url};
+  });
+  if(!list.length)return;
+  savedPush(list);
+}
+function renderSaved(){
+  const L=S.saved;
+  const opts='<option value="">날짜 선택…</option>'+Array.from({length:S.days},(_,i)=>`<option value="${i}">${dayLabel(i)}</option>`).join('');
+  const row=(x,i)=>`<div class="item"><span class="nm">${esc(x.name)}${x.note?`<span class="nt">${esc(x.note)}</span>`:''}</span>
+    ${x.name||x.url?`<a class="btn" target="_blank" rel="noopener" href="${esc(mapQ(x))}">📍 지도</a>`:''}
+    ${x.day!=null?`<span class="done">${dayLabel(x.day).split(' · ')[0]} 배정됨</span>`:`<select id="sd${i}">${opts}</select><button class="btn p" onclick="savedAssign(${i})">일정에 추가</button>`}
+    <button class="ib" title="목록에서 삭제" onclick="savedDel(${i})">✕</button></div>`;
+  const un=L.map((x,i)=>[x,i]).filter(([x])=>x.day==null),as=L.map((x,i)=>[x,i]).filter(([x])=>x.day!=null);
+  $('#saved').innerHTML=`<div class="sv"><h1>⭐ 구글맵 저장 장소</h1>
+  <div class="subt">가져온 후보 ${L.length}곳 · 아직 날짜 미정 ${un.length}곳</div>
+  <div class="box"><b>1) 저장 목록 파일(CSV) 가져오기</b>
+    <p>구글맵에서 저장한 장소를 내려받은 CSV 파일을 고르세요. 장소명·메모·구글맵 링크를 읽어 와요.</p>
+    <label class="btn p" style="cursor:pointer">📂 CSV 파일 선택<input type="file" accept=".csv" class="hide" onchange="savedCsv(this)"></label>
+    <details><summary>CSV는 어떻게 받나요?</summary>
+      <div style="margin-top:6px">구글 테이크아웃(takeout.google.com)에서 지도의 <b>저장된 장소</b> 항목만 선택해 내보내면 목록별 CSV가 들어 있어요. 구글이 화면 문구를 바꿀 수 있으니, 안 보이면 아래 붙여넣기를 쓰세요.</div></details></div>
+  <div class="box"><b>2) 장소명·구글맵 링크 붙여넣기</b>
+    <p>한 줄에 한 곳씩 적어요. 이름만, 링크만, 이름+링크 모두 돼요.</p>
+    <textarea id="svpaste" placeholder="이치란 라멘 하카타&#10;https://maps.app.goo.gl/xxxx&#10;센소지 https://www.google.com/maps/place/..."></textarea>
+    <div class="row"><button class="btn p" onclick="savedPaste()">+ 후보에 추가</button></div></div>
+  <div class="list">${L.length?[...un,...as].map(([x,i])=>row(x,i)).join(''):'<div class="empty">아직 가져온 장소가 없어요.</div>'}</div></div>`;
+}
+function savedAssign(i){
+  const d=document.getElementById('sd'+i).value;
+  if(d===''){alert('먼저 날짜를 골라 주세요.');return}
+  const x=S.saved[i],day=+d;
+  S.plan[day]=S.plan[day]||[];
+  S.plan[day].push({time:'',name:x.name,cost:0,cat:'관광',memo:x.note,url:x.url});
+  x.day=day;save();renderSaved();renderPlan();
+}
+function savedDel(i){S.saved.splice(i,1);save();renderSaved()}
+
+function render(){renderPlan();renderBudget();renderSaved();renderShop();renderSum()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  ['plan','budget','saved','shop','sum'].forEach(id=>$('#'+id).classList.toggle('hide',id!==b.dataset.t));
+  if(b.dataset.t==='sum')renderSum();
+});
+head();render();
+</script>
+</body>
+</html>
